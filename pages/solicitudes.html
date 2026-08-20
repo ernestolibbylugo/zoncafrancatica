@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitudes de Instalación — ZoFranca CR</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        🏢 ZoFranca <span>CR</span>
+      </a>
+      <nav>
+        <ul class="navbar-nav">
+          <li><a href="../index.html" class="nav-link">Dashboard</a></li>
+          <li><a href="solicitudes.html" class="nav-link active">Solicitudes</a></li>
+          <li><a href="cumplimiento.html" class="nav-link">Cumplimiento</a></li>
+          <li><a href="alertas.html" class="nav-link">Alertas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1>Gestión de Solicitudes de Instalación</h1>
+        <p>Registro de nuevas empresas y consulta asíncrona del estado de expedientes.</p>
+      </div>
+    </div>
+
+    <!-- Formulario de Registro de Solicitud -->
+    <section class="card">
+      <div class="card-header">
+        <h2>📝 Registrar Nueva Solicitud de Ingreso</h2>
+      </div>
+      <div class="card-body">
+        <form id="form-solicitud">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="empresa">Nombre de la Empresa *</label>
+              <input type="text" id="empresa" name="empresa" class="form-control" placeholder="Ej. MedTech Costa Rica S.A." required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="identificacion">Cédula Jurídica / Tax ID *</label>
+              <input type="text" id="identificacion" name="identificacion" class="form-control" placeholder="Ej. 3-101-123456" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="zonaFrancaId">Zona Franca de Destino *</label>
+              <select id="zonaFrancaId" name="zonaFrancaId" class="form-control" required>
+                <option value="">Cargando zonas francas...</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="sector">Sector Económico *</label>
+              <select id="sector" name="sector" class="form-control" required>
+                <option value="">Seleccione sector...</option>
+                <option value="tecnologia">Tecnología y Software</option>
+                <option value="dispositivos_medicos">Dispositivos Médicos</option>
+                <option value="manufactura">Manufactura Avanzada</option>
+                <option value="bpo">Servicios Compartidos / BPO</option>
+                <option value="logistica">Logística y Distribución</option>
+                <option value="agroindustria">Agroindustria</option>
+                <option value="comercio_minorista">Comercio Minorista (Restringido)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inversionProyectada">Inversión Proyectada (USD $) *</label>
+              <input type="number" id="inversionProyectada" name="inversionProyectada" class="form-control" placeholder="Ej. 150000" min="1" step="1000" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="empleosProyectados">Empleos Directos Proyectados *</label>
+              <input type="number" id="empleosProyectados" name="empleosProyectados" class="form-control" placeholder="Ej. 25" min="1" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="contacto">Persona de Contacto *</label>
+              <input type="text" id="contacto" name="contacto" class="form-control" placeholder="Ej. Laura Morales" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">Correo Electrónico *</label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="contacto@empresa.cr" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="documentos">Referencias Documentales / Adjuntos</label>
+              <input type="text" id="documentos" name="documentos" class="form-control" placeholder="Personería jurídica, Estados financieros auditados">
+            </div>
+          </div>
+
+          <div class="d-flex justify-between align-center mt-3">
+            <small class="text-muted">* Campos obligatorios para trámite formal.</small>
+            <button type="submit" class="btn btn-primary">
+              Enviar Solicitud
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Barra de Búsqueda y Filtros -->
+    <section class="card">
+      <div class="card-body">
+        <div class="form-row align-center">
+          <div class="form-group mb-0" style="flex: 2;">
+            <label class="form-label" for="search-solicitudes">Buscar Solicitud</label>
+            <input type="text" id="search-solicitudes" class="form-control" placeholder="Buscar por nombre de empresa, cédula jurídica o contacto...">
+          </div>
+
+          <div class="form-group mb-0">
+            <label class="form-label" for="filter-estado">Filtrar por Estado</label>
+            <select id="filter-estado" class="form-control">
+              <option value="todos">Todos los estados</option>
+              <option value="Pendiente">Pendientes</option>
+              <option value="En revisión">En revisión</option>
+              <option value="Aprobada">Aprobadas</option>
+              <option value="Rechazada">Rechazadas</option>
+            </select>
+          </div>
+
+          <div class="form-group mb-0">
+            <label class="form-label" for="filter-sector">Filtrar por Sector</label>
+            <select id="filter-sector" class="form-control">
+              <option value="todos">Todos los sectores</option>
+              <option value="tecnologia">Tecnología</option>
+              <option value="dispositivos_medicos">Dispositivos Médicos</option>
+              <option value="manufactura">Manufactura</option>
+              <option value="bpo">BPO</option>
+              <option value="logistica">Logística</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabla de Solicitudes -->
+    <section class="card" id="tabla-solicitudes-container">
+      <div class="card-header d-flex justify-between align-center">
+        <h2>📋 Expedientes Registrados</h2>
+        <span id="contador-solicitudes" class="text-muted font-bold">Cargando...</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Empresa / ID</th>
+                <th>Sector</th>
+                <th>Inversión Proy.</th>
+                <th>Empleos</th>
+                <th>Estado</th>
+                <th>Afinidad IA</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-solicitudes-body">
+              <tr>
+                <td colspan="8" class="text-center py-4 text-muted">Cargando solicitudes...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>ZoFranca CR &copy; 2026 — Plataforma de Gestión de Zonas Francas.</p>
+  </footer>
+
+  <!-- Script del Módulo -->
+  <script type="module">
+    import { SolicitudesModule } from '../js/modules/solicitudes.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      SolicitudesModule.initPage();
+    });
+  </script>
+</body>
+</html>

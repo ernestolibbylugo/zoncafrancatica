@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZoFranca CR — Gestión Inteligente de Zonas Francas</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="navbar-brand">
+        🏢 ZoFranca <span>CR</span>
+      </a>
+      <nav>
+        <ul class="navbar-nav">
+          <li><a href="index.html" class="nav-link active">Dashboard</a></li>
+          <li><a href="pages/solicitudes.html" class="nav-link">Solicitudes</a></li>
+          <li><a href="pages/cumplimiento.html" class="nav-link">Cumplimiento</a></li>
+          <li><a href="pages/alertas.html" class="nav-link">Alertas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <main class="container" id="dashboard-content">
+    <div class="page-header">
+      <div>
+        <h1>Panel de Control Principal</h1>
+        <p>Monitoreo integral de admisiones, evaluación asistida por IA y fiscalización de cumplimiento.</p>
+      </div>
+      <div>
+        <button id="btn-evaluar-lote-ia" class="btn btn-primary">
+          ⚡ Evaluar Pendientes con IA (Promise.all)
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid de Indicadores KPI -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-title">Total Solicitudes</span>
+        <div class="kpi-value" id="kpi-total-solicitudes">0</div>
+      </div>
+      <div class="kpi-card kpi-warning">
+        <span class="kpi-title">Pendientes de Revisión</span>
+        <div class="kpi-value text-warning" id="kpi-solicitudes-pendientes">0</div>
+      </div>
+      <div class="kpi-card kpi-success">
+        <span class="kpi-title">Solicitudes Aprobadas</span>
+        <div class="kpi-value text-success" id="kpi-solicitudes-aprobadas">0</div>
+      </div>
+      <div class="kpi-card kpi-success">
+        <span class="kpi-title">Empresas en Regla</span>
+        <div class="kpi-value text-success" id="kpi-empresas-en-regla">0</div>
+      </div>
+      <div class="kpi-card kpi-danger">
+        <span class="kpi-title">Empresas con Alertas</span>
+        <div class="kpi-value text-danger" id="kpi-empresas-incumplimiento">0</div>
+      </div>
+      <div class="kpi-card kpi-danger">
+        <span class="kpi-title">Total Alertas Activas</span>
+        <div class="kpi-value text-danger" id="kpi-total-alertas">0</div>
+      </div>
+    </section>
+
+    <!-- Dos Columnas: Solicitudes Recientes y Alertas Recientes -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+
+      <!-- Solicitudes Recientes -->
+      <section class="card">
+        <div class="card-header d-flex justify-between align-center">
+          <h2>📥 Solicitudes Recientes</h2>
+          <a href="pages/solicitudes.html" class="btn btn-sm btn-secondary">Ver todas</a>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Empresa</th>
+                  <th>Sector</th>
+                  <th>Inversión</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-solicitudes-body">
+                <tr>
+                  <td colspan="5" class="text-center py-4 text-muted">Cargando solicitudes...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Alertas Recientes -->
+      <section class="card">
+        <div class="card-header d-flex justify-between align-center">
+          <h2>🚨 Alertas de Incumplimiento</h2>
+          <a href="pages/alertas.html" class="btn btn-sm btn-secondary">Ver panel</a>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Empresa</th>
+                  <th>Indicador</th>
+                  <th>Brecha / Déficit</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-alertas-body">
+                <tr>
+                  <td colspan="4" class="text-center py-4 text-muted">Cargando alertas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>ZoFranca CR &copy; 2026 — Proyecto Académico de Programación Web. Integrantes: Ernesto Libby Lugo y Ulysses Quirós V.</p>
+  </footer>
+
+  <!-- Script Principal -->
+  <script type="module">
+    import { App } from './js/app.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      App.initDashboard();
+    });
+  </script>
+</body>
+</html>
