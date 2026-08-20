@@ -1,0 +1,18 @@
+﻿{
+  "zonasFrancas": [
+    {
+      "id": 1,
+      "nombre": "Zona Franca Tica",
+      "inversionMinima": 50000,
+      "empleosMinimos": 10,
+      "sectoresPermitidos": [
+        "tecnologia",
+        "manufactura",
+        "bpo"
+      ]
+    }
+  ],
+  "solicitudes": [],
+  "empresas": [],
+  "reportesCumplimiento": []
+}
