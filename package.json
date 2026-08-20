@@ -1,0 +1,11 @@
+﻿{
+  "name": "zoncafrancatica",
+  "version": "1.0.0",
+  "description": "Plataforma de gestión de solicitudes y cumplimiento para zonas francas de Costa Rica",
+  "scripts": {
+    "server": "json-server --watch db.json --port 3001"
+  },
+  "devDependencies": {
+    "json-server": "^0.17.4"
+  }
+}
