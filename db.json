@@ -1,4 +1,4 @@
-﻿{
+{
   "zonasFrancas": [
     {
       "id": 1,
@@ -8,11 +8,185 @@
       "sectoresPermitidos": [
         "tecnologia",
         "manufactura",
-        "bpo"
+        "bpo",
+        "dispositivos_medicos"
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Zona Franca del Caribe",
+      "inversionMinima": 100000,
+      "empleosMinimos": 25,
+      "sectoresPermitidos": [
+        "logistica",
+        "agroindustria",
+        "manufactura"
       ]
     }
   ],
-  "solicitudes": [],
-  "empresas": [],
-  "reportesCumplimiento": []
+  "solicitudes": [
+    {
+      "id": 1,
+      "empresa": "TechCorp Global S.A.",
+      "identificacion": "3-101-789456",
+      "sector": "tecnologia",
+      "inversionProyectada": 150000,
+      "empleosProyectados": 25,
+      "contacto": "Carolina Morales",
+      "email": "carolina@techcorp.cr",
+      "documentos": "Certificado personería jurídica, Plan de inversión 2026, Estados financieros auditados",
+      "zonaFrancaId": 1,
+      "fechaSolicitud": "2026-08-10T09:30:00.000Z",
+      "estado": "Aprobada",
+      "evaluacionIA": {
+        "puntaje": 95,
+        "clasificacionSugerida": "Recomendada",
+        "justificacion": "Supera ampliamente los umbrales mínimos de inversión ($150,000 vs $50,000) y empleo (25 vs 10) para el sector tecnológico permitido.",
+        "fechaEvaluacion": "2026-08-10T10:00:00.000Z"
+      },
+      "decisionFinal": {
+        "decision": "Aprobada",
+        "analista": "Ernesto Libby Lugo",
+        "observaciones": "Solicitud sólida con cumplimiento de todos los requisitos legales y fiscales.",
+        "fechaDecision": "2026-08-11T14:20:00.000Z"
+      }
+    },
+    {
+      "id": 2,
+      "empresa": "BioMedica CR Limitada",
+      "identificacion": "3-102-654321",
+      "sector": "dispositivos_medicos",
+      "inversionProyectada": 300000,
+      "empleosProyectados": 50,
+      "contacto": "Dr. Fernando Solís",
+      "email": "fsolis@biomedicacr.com",
+      "documentos": "Licencia sanitaria, Personería jurídica, Estudio de impacto ambiental",
+      "zonaFrancaId": 1,
+      "fechaSolicitud": "2026-08-12T11:15:00.000Z",
+      "estado": "Aprobada",
+      "evaluacionIA": {
+        "puntaje": 98,
+        "clasificacionSugerida": "Recomendada",
+        "justificacion": "Proyecto de alto impacto en dispositivos médicos que triplica la inversión requerida y genera 50 empleos especializados.",
+        "fechaEvaluacion": "2026-08-12T11:45:00.000Z"
+      },
+      "decisionFinal": {
+        "decision": "Aprobada",
+        "analista": "Ulysses Quirós V.",
+        "observaciones": "Aprobada formalmente. Cumple con la normativa PROCOMER de ciencias de la vida.",
+        "fechaDecision": "2026-08-13T09:00:00.000Z"
+      }
+    },
+    {
+      "id": 3,
+      "empresa": "Innovatech Services SRL",
+      "identificacion": "3-103-112233",
+      "sector": "bpo",
+      "inversionProyectada": 55000,
+      "empleosProyectados": 12,
+      "contacto": "Valeria Rojas",
+      "email": "vrojas@innovatech.cr",
+      "documentos": "Estados financieros proforma, Personería jurídica",
+      "zonaFrancaId": 1,
+      "fechaSolicitud": "2026-08-18T14:00:00.000Z",
+      "estado": "Pendiente",
+      "evaluacionIA": {
+        "puntaje": 62,
+        "clasificacionSugerida": "Revisar",
+        "justificacion": "Inversión proyectada ($55,000) muy cercana al límite mínimo ($50,000). Requiere revisión de viabilidad financiera.",
+        "fechaEvaluacion": "2026-08-18T14:10:00.000Z"
+      },
+      "decisionFinal": null
+    },
+    {
+      "id": 4,
+      "empresa": "Comercializadora Retail Centroamérica",
+      "identificacion": "3-104-998877",
+      "sector": "comercio_minorista",
+      "inversionProyectada": 30000,
+      "empleosProyectados": 5,
+      "contacto": "Manuel Gómez",
+      "email": "mgomez@retailca.com",
+      "documentos": "Declaración jurada de ingresos",
+      "zonaFrancaId": 1,
+      "fechaSolicitud": "2026-08-19T08:20:00.000Z",
+      "estado": "Pendiente",
+      "evaluacionIA": null,
+      "decisionFinal": null
+    }
+  ],
+  "empresas": [
+    {
+      "id": 1,
+      "nombre": "TechCorp Global S.A.",
+      "identificacion": "3-101-789456",
+      "sector": "tecnologia",
+      "zonaFrancaId": 1,
+      "solicitudId": 1,
+      "inversionComprometida": 150000,
+      "empleosComprometidos": 25,
+      "fechaInstalacion": "2026-01-15T00:00:00.000Z",
+      "estado": "activo"
+    },
+    {
+      "id": 2,
+      "nombre": "BioMedica CR Limitada",
+      "identificacion": "3-102-654321",
+      "sector": "dispositivos_medicos",
+      "zonaFrancaId": 1,
+      "solicitudId": 2,
+      "inversionComprometida": 300000,
+      "empleosComprometidos": 50,
+      "fechaInstalacion": "2026-02-01T00:00:00.000Z",
+      "estado": "activo"
+    },
+    {
+      "id": 3,
+      "nombre": "Logística y Envíos Ticos S.A.",
+      "identificacion": "3-105-445566",
+      "sector": "manufactura",
+      "zonaFrancaId": 1,
+      "solicitudId": 0,
+      "inversionComprometida": 200000,
+      "empleosComprometidos": 30,
+      "fechaInstalacion": "2025-06-10T00:00:00.000Z",
+      "estado": "activo"
+    }
+  ],
+  "reportesCumplimiento": [
+    {
+      "id": 1,
+      "empresaId": 1,
+      "periodo": "2026-T1",
+      "fechaReporte": "2026-04-15T10:30:00.000Z",
+      "empleosReales": 28,
+      "inversionEjecutada": 165000,
+      "exportaciones": 420000,
+      "observaciones": "Operaciones en régimen normal. Se superaron las metas de contratación.",
+      "resultadoComparativo": {
+        "cumpleEmpleo": true,
+        "cumpleInversion": true,
+        "porcentajeEmpleo": 112,
+        "porcentajeInversion": 110,
+        "estadoCumplimiento": "En regla"
+      }
+    },
+    {
+      "id": 2,
+      "empresaId": 3,
+      "periodo": "2026-T1",
+      "fechaReporte": "2026-04-20T16:00:00.000Z",
+      "empleosReales": 22,
+      "inversionEjecutada": 140000,
+      "exportaciones": 180000,
+      "observaciones": "Retraso en la llegada de maquinaria importada y retraso en contrataciones del turno vespertino.",
+      "resultadoComparativo": {
+        "cumpleEmpleo": false,
+        "cumpleInversion": false,
+        "porcentajeEmpleo": 73.33,
+        "porcentajeInversion": 70,
+        "estadoCumplimiento": "Incumplimiento"
+      }
+    }
+  ]
 }

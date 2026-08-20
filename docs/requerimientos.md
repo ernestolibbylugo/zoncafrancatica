@@ -1,360 +1,627 @@
-# ZoFranca CR  
-## Documento de requerimientos
+# ZoFranca CR — Documento de Requerimientos
 
 **Plataforma de gestión de solicitudes y cumplimiento para zonas francas de Costa Rica**
 
-**Asignatura:** Programación / Desarrollo Web  
-**Integrantes:** Ernesto Libby Lugo y Ulises  
-**Docente:** __________________________  
-**Fecha:** __________________________  
-**Versión:** 1.0  
+- **Proyecto:** ZoFranca CR
+- **Laboratorio:** #3 — Extendido
+- **Asignatura:** Programación / Desarrollo Web
+- **Integrantes:** Ernesto Libby Lugo y Ulysses Quirós V.
+- **Fecha:** 20 de agosto de 2026
+- **Versión:** 2.0 (Consolidada y ampliada)
 
 ---
 
 ## 1. Introducción y contexto
 
-Actualmente, las solicitudes de instalación de empresas en zonas francas de Costa Rica se reciben y revisan mediante correos electrónicos, documentos adjuntos y hojas de cálculo. Los analistas deben leer los documentos, transcribir la información y comparar manualmente la inversión, los empleos y el sector de cada empresa con los criterios establecidos.
+Actualmente, las solicitudes de instalación de empresas en zonas francas de Costa Rica se reciben y revisan mediante correos electrónicos, documentos adjuntos y hojas de cálculo. Los analistas deben leer los documentos, transcribir la información y comparar manualmente la inversión, los empleos y el sector de cada empresa con los criterios establecidos para el régimen.
 
-Este proceso puede ocasionar tiempos de respuesta prolongados, errores de transcripción, aplicación inconsistente de los criterios y falta de trazabilidad. El control posterior del cumplimiento también se realiza manualmente, lo que dificulta detectar oportunamente empresas que no estén alcanzando sus compromisos de inversión o empleo.
+Este proceso manual ocasiona tiempos de respuesta prolongados, riesgos de errores de transcripción, aplicación inconsistente de criterios y una sensible falta de trazabilidad. De igual manera, el control posterior del cumplimiento operativo (inversión ejecutada, empleos directos generados y exportaciones) se realiza de forma fragmentada, lo que dificulta detectar oportunamente a empresas que no estén alcanzando sus compromisos obligatorios.
 
-ZoFranca CR será una plataforma web que permitirá registrar solicitudes, almacenarlas en un backend simulado con `json-server` y procesarlas de manera asíncrona. El sistema utilizará un componente de inteligencia artificial simulada para calcular un puntaje y sugerir una clasificación, aunque la decisión definitiva permanecerá bajo responsabilidad de un analista humano.
-
-La primera versión abarcará una zona franca, un flujo de solicitudes y un flujo de reportes de cumplimiento. Sin embargo, su arquitectura será diseñada para permitir futuras ampliaciones.
+**ZoFranca CR** es una plataforma web modular diseñada para digitalizar y automatizar el ciclo completo: desde la recepción de solicitudes, su evaluación asistida por Inteligencia Artificial y la validación por analistas humanos, hasta el seguimiento periódico del cumplimiento y la generación automatizada de alertas de incumplimiento. La plataforma interactúa de manera asíncrona con un backend simulado mediante `json-server` (`http://localhost:3001`), garantizando una interfaz reactiva, no bloqueante y orientada a la auditoría continua para entidades supervisoras como PROCOMER.
 
 ---
 
 ## 2. Objetivo general
 
-Diseñar e implementar una plataforma web que automatice la recepción, evaluación preliminar y seguimiento de las solicitudes de instalación y los reportes de cumplimiento de empresas en una zona franca de Costa Rica, mediante JavaScript asíncrono, `json-server` y un componente de inteligencia artificial que apoye la toma de decisiones humanas.
+Diseñar e implementar una plataforma web modular y asíncrona que automatice la recepción, evaluación preliminar asistida por IA y seguimiento del cumplimiento de solicitudes y empresas en zonas francas de Costa Rica, garantizando la supervisión humana final, la persistencia de datos mediante `json-server` y la generación oportuna de alertas de incumplimiento.
 
 ---
 
 ## 3. Objetivos específicos
 
-- Digitalizar el registro y envío de solicitudes de instalación.
-- Guardar y consultar la información mediante un backend simulado con `json-server`.
-- Evaluar las solicitudes de forma asíncrona sin bloquear la interfaz.
-- Calcular un puntaje de afinidad utilizando los criterios de la zona franca.
-- Clasificar preliminarmente las solicitudes como `Recomendada`, `Revisar` o `Rechazada`.
-- Permitir que el analista confirme o modifique la clasificación sugerida.
-- Registrar reportes periódicos de inversión, empleo y exportaciones.
-- Detectar posibles incumplimientos y generar alertas.
-- Mantener trazabilidad sobre solicitudes, reportes y decisiones.
-- Manejar estados de carga y errores con mensajes comprensibles.
-- Procesar varias solicitudes o reportes en paralelo mediante `Promise.all`.
-- Diseñar una estructura que pueda ampliarse a múltiples zonas francas.
+1. Digitalizar el registro y recepción en línea de solicitudes de instalación empresarial.
+2. Persistir y consultar la información de manera asíncrona mediante un backend simulado en `json-server` sobre el puerto 3001.
+3. Evaluar el perfil de las solicitudes mediante un motor de Inteligencia Artificial simulado que genere un puntaje de afinidad (0–100) y justificación técnica.
+4. Clasificar automáticamente las solicitudes en `Recomendada`, `Revisar` o `Rechazada` según umbrales predefinidos.
+5. Garantizar la intervención y decisión final obligatoria de un analista humano sobre las recomendaciones de la IA.
+6. Procesar múltiples solicitudes y reportes de forma concurrente y no bloqueante utilizando `Promise.all`.
+7. Registrar periódicamente reportes de cumplimiento (empleos reales, inversión ejecutada, exportaciones) para empresas instaladas.
+8. Comparar automáticamente los compromisos contra los resultados reales y generar alertas visibles ante incumplimientos.
+9. Proporcionar un panel de control (Dashboard) con métricas consolidadas del estado de solicitudes, cumplimiento y alertas.
+10. Implementar un manejo robusto de errores de red, fallos de backend y validaciones de datos con retroalimentación clara y no técnica al usuario.
 
 ---
 
-## 4. Análisis del enunciado
+## 4. Análisis del sistema
 
 ### 4.1 Actores identificados
 
-| Actor | Responsabilidad |
+| Actor | Descripción y responsabilidades |
 |---|---|
-| Empresa solicitante | Completar y enviar una solicitud de instalación. |
-| Empresa instalada | Presentar reportes periódicos de cumplimiento. |
-| Analista de solicitudes | Revisar la clasificación sugerida y tomar la decisión final. |
-| Analista de cumplimiento | Revisar reportes y alertas de incumplimiento. |
-| Administrador de la zona franca | Configurar los criterios de admisión y consultar métricas. |
-| Gerente o auditor | Consultar la trazabilidad de las decisiones y los reportes consolidados. |
-| Motor de IA | Calcular un puntaje y generar una recomendación con su justificación. |
-| PROCOMER | Entidad relacionada con la supervisión del régimen de zonas francas. |
+| **Empresa solicitante** | Completa y envía digitalmente el formulario de solicitud de instalación adjuntando compromisos y referencias documentales. |
+| **Empresa instalada** | Envía periódicamente sus reportes de cumplimiento operacional (empleo real, inversión ejecutada, exportaciones). |
+| **Analista de solicitudes** | Revisa la evaluación generada por la IA, analiza la justificación y toma la decisión definitiva (aprobar, revisar o rechazar). |
+| **Analista de cumplimiento** | Supervisa los reportes periódicos, revisa el comparativo contra compromisos y gestiona las alertas de incumplimiento. |
+| **Administrador de la zona franca** | Consulta métricas globales en el dashboard y administra los parámetros de admisión de las zonas francas. |
+| **Gerente / Auditor** | Consulta la trazabilidad histórica de decisiones, expedientes de empresas y consolidados para efectos de auditoría. |
+| **Motor de IA (Simulado)** | Analiza asíncronamente los datos de solicitud frente a criterios de admisión, calcula puntaje de afinidad y sugiere clasificación. |
+| **PROCOMER** | Ente supervisor externo a quien se reportan los resúmenes consolidados de inversión y generación de empleo del régimen. |
 
-### 4.2 Funciones identificadas
+### 4.2 Funciones principales
 
-- Registrar zonas francas y criterios de admisión.
-- Recibir solicitudes de instalación.
-- Guardar y consultar solicitudes.
-- Evaluar sector, inversión y empleos proyectados.
-- Calcular un puntaje de afinidad.
-- Clasificar preliminarmente las solicitudes.
-- Permitir la intervención de un analista humano.
-- Registrar reportes de cumplimiento.
-- Comparar resultados reales con los compromisos originales.
-- Generar alertas de incumplimiento.
-- Consultar historiales y reportes consolidados.
-- Filtrar solicitudes por diferentes criterios.
-- Procesar información de manera asíncrona.
+- Gestión y parametrización de zonas francas y criterios de admisión.
+- Registro y consulta asíncrona de solicitudes de instalación.
+- Preclasificación y evaluación algorítmica/IA con puntaje 0–100 y justificación.
+- Flujo de decisión y confirmación humana de solicitudes.
+- Registro periódico de reportes de cumplimiento de empresas instaladas.
+- Cálculo automático de variaciones y porcentajes de cumplimiento (empleo e inversión).
+- Detección y emisión de alertas de incumplimiento operacionales.
+- Panel de métricas y consolidado de operaciones (Dashboard).
+- Búsqueda, ordenamiento y filtrado multicriterio de solicitudes y reportes.
+- Manejo de estados asíncronos (cargando, éxito, error amigable).
 
-### 4.3 Datos principales del sistema
+### 4.3 Estructura de datos principal
 
-| Entidad | Datos principales |
+| Entidad | Campos y estructura |
 |---|---|
-| Zona franca | Identificador, nombre, inversión mínima, empleos mínimos y sectores permitidos. |
-| Solicitud | Empresa, sector, inversión proyectada, empleos proyectados, documentos, fecha y estado. |
-| Evaluación | Puntaje, clasificación, justificación y fecha de evaluación. |
-| Decisión humana | Decisión final, analista responsable, observaciones y fecha. |
-| Empresa instalada | Identificador, solicitud aprobada y compromisos asumidos. |
-| Reporte de cumplimiento | Empleos reales, inversión ejecutada, exportaciones y periodo reportado. |
-| Alerta | Tipo de incumplimiento, descripción, nivel, estado y fecha. |---
+| `zonasFrancas` | `id`, `nombre`, `inversionMinima`, `empleosMinimos`, `sectoresPermitidos` |
+| `solicitudes` | `id`, `empresa`, `identificacion`, `sector`, `inversionProyectada`, `empleosProyectados`, `contacto`, `documentos`, `zonaFrancaId`, `fechaSolicitud`, `estado`, `evaluacionIA` (`puntaje`, `justificacion`, `clasificacionSugerida`, `fechaEvaluacion`), `decisionFinal` (`decision`, `analista`, `observaciones`, `fechaDecision`) |
+| `empresas` | `id`, `nombre`, `identificacion`, `sector`, `zonaFrancaId`, `solicitudId`, `inversionComprometida`, `empleosComprometidos`, `fechaInstalacion`, `estado` (`activo`, `en_observacion`, `incumplimiento`) |
+| `reportesCumplimiento` | `id`, `empresaId`, `periodo`, `fechaReporte`, `empleosReales`, `inversionEjecutada`, `exportaciones`, `observaciones`, `resultadoComparativo` (`cumpleEmpleo`, `cumpleInversion`, `porcentajeEmpleo`, `porcentajeInversion`, `estadoCumplimiento`) |
+
+---
 
 ## 5. Entrevista simulada al cliente
 
-Para comprender las necesidades de la administraciÃ³n de la zona franca, se realizÃ³ una entrevista simulada. Las respuestas representan supuestos razonables que deberÃ¡n confirmarse con un cliente real antes de implementar el sistema en producciÃ³n.
+Para comprender a fondo las necesidades de la administración de zonas francas, se realizó una entrevista estructurada:
 
-### 1. Â¿QuiÃ©nes utilizarÃ¡n la plataforma?
+### 1. ¿Quiénes utilizarán la plataforma ZoFranca CR?
+La plataforma será utilizada por empresas interesadas en ingresar al régimen, empresas ya operativas para reportar cumplimiento, analistas de admisiones, analistas de fiscalización, administradores y auditores.
 
-La utilizarÃ¡n empresas interesadas en instalarse, empresas ya instaladas, analistas de solicitudes, analistas de cumplimiento, administradores y personal encargado de auditorÃ­as.
+### 2. ¿Qué información obligatoria debe presentar una empresa solicitante?
+Debe suministrar: nombre comercial, cédula jurídica, sector productivo, inversión proyectada (en USD), empleos directos proyectados, nombre y correo del contacto responsable, y mención de documentos legales y fiscales de respaldo.
 
-### 2. Â¿QuÃ© informaciÃ³n debe presentar una empresa solicitante?
+### 3. ¿Cuáles son los criterios iniciales de admisión?
+Se evalúa que el sector pertenezca a los autorizados en la zona franca, y que la inversión proyectada y los empleos proyectados alcancen o superen los umbrales mínimos definidos por la zona franca elegida.
 
-Debe indicar su nombre, identificaciÃ³n jurÃ­dica, sector, inversiÃ³n proyectada, cantidad de empleos proyectados, persona de contacto y documentos de respaldo legal y fiscal.
+### 4. ¿Todas las zonas francas manejan los mismos criterios?
+No. Cada zona franca posee umbrales de inversión y sectores autorizados distintos. Por ello, los criterios deben obtenerse asíncronamente del backend (`json-server`) y no estar fijos (*hardcoded*) en el código.
 
-### 3. Â¿CuÃ¡les son los criterios iniciales de admisiÃ³n?
+### 5. ¿La Inteligencia Artificial puede tomar la decisión final de admisión?
+No. La IA proporciona un puntaje de afinidad (0–100), una justificación técnica y una recomendación preliminar. La decisión final, con firma y observaciones, recae estrictamente en un analista humano.
 
-En esta primera versiÃ³n se evaluarÃ¡n el sector de actividad, la inversiÃ³n proyectada y la cantidad de empleos que la empresa promete generar.
+### 6. ¿Qué clasificaciones preliminares sugiere el sistema?
+Se definen tres categorías:
+- **Recomendada:** Cumple con holgura o supera ampliamente los criterios (puntaje 75–100).
+- **Revisar:** Cumple parcialmente o está cerca de los umbrales mínimos, requiriendo análisis adicional (puntaje 50–74).
+- **Rechazada:** No cumple los criterios mínimos indispensables o pertenece a un sector no admitido (puntaje 0–49).
 
-### 4. Â¿Todas las zonas francas utilizan los mismos criterios?
-
-No. Cada zona franca puede establecer valores mÃ­nimos y sectores permitidos diferentes. Aunque la primera versiÃ³n implemente una sola zona, los criterios deben almacenarse en el backend y no quedar escritos directamente en el cÃ³digo.
-
-### 5. Â¿La inteligencia artificial puede aprobar o rechazar definitivamente una solicitud?
-
-No. La IA solamente calcula un puntaje, produce una justificaciÃ³n y sugiere una clasificaciÃ³n. La decisiÃ³n definitiva debe tomarla un analista humano.
-
-### 6. Â¿QuÃ© clasificaciones puede sugerir el sistema?
-
-El sistema puede clasificar preliminarmente una solicitud como `Recomendada`, `Revisar` o `Rechazada`, segÃºn el puntaje obtenido.
-
-### 7. Â¿QuÃ© sucede si una solicitud contiene informaciÃ³n incompleta?
-
-El sistema debe impedir su envÃ­o cuando falten datos obligatorios y mostrar un mensaje que indique claramente cuÃ¡les campos deben corregirse.
-
-### 8. Â¿QuÃ© debe ocurrir cuando falla el servidor o la evaluaciÃ³n?
-
-El sistema debe informar el problema mediante un mensaje comprensible, registrar el error tÃ©cnico en la consola y permitir que el usuario vuelva a intentarlo sin perder innecesariamente los datos introducidos.
-
-### 9. Â¿QuÃ© informaciÃ³n presentan las empresas instaladas?
-
-Presentan reportes periÃ³dicos con los empleos reales, la inversiÃ³n ejecutada, las exportaciones y el periodo correspondiente.
-
-### 10. Â¿CuÃ¡ndo se genera una alerta de incumplimiento?
-
-Se genera cuando los empleos reales o la inversiÃ³n ejecutada se encuentran por debajo de los compromisos establecidos en la solicitud aprobada.
-
-### 11. Â¿Debe conservarse un historial de las decisiones?
-
-SÃ­. El sistema debe registrar la clasificaciÃ³n sugerida, la decisiÃ³n definitiva, la persona responsable, la fecha y las observaciones asociadas.
-
-### 12. Â¿QuÃ© ampliaciones se esperan en el futuro?
-
-Se espera incorporar varias zonas francas, autenticaciÃ³n y roles, integraciÃ³n con PROCOMER, notificaciones automÃ¡ticas y herramientas analÃ­ticas mÃ¡s avanzadas.
+### 7. ¿Cómo se supervisa a una empresa luego de ser aprobada?
+Una vez aprobada, la empresa queda registrada con sus compromisos formales. Periódicamente (trimestral/anual), remite sus reportes de inversión ejecutada, personal contratado y exportaciones. El sistema compara automáticamente estos datos contra lo comprometido y alerta ante cualquier desviación negativa.
 
 ---
 
 ## 6. Reglas de negocio
 
-Los valores utilizados en esta versiÃ³n son supuestos acadÃ©micos y no representan necesariamente los requisitos legales oficiales del rÃ©gimen de zonas francas de Costa Rica.
-
-| ID | Regla |
-|---|---|
-| RN-01 | Cada solicitud debe estar relacionada con una zona franca registrada. |
-| RN-02 | La empresa debe completar todos los datos obligatorios antes de enviar la solicitud. |
-| RN-03 | La inversiÃ³n proyectada y los empleos proyectados deben ser valores numÃ©ricos mayores que cero. |
-| RN-04 | La evaluaciÃ³n debe utilizar los criterios almacenados para la zona franca seleccionada. |
-| RN-05 | Un sector permitido aporta 40 puntos al puntaje; un sector no permitido aporta 0 puntos. |
-| RN-06 | El cumplimiento de la inversiÃ³n mÃ­nima aporta hasta 30 puntos, proporcionalmente al valor proyectado. |
-| RN-07 | El cumplimiento de los empleos mÃ­nimos aporta hasta 30 puntos, proporcionalmente a la cantidad proyectada. |
-| RN-08 | El puntaje total debe ser un nÃºmero entero entre 0 y 100. |
-| RN-09 | Una solicitud con 75 puntos o mÃ¡s se clasifica como `Recomendada`. |
-| RN-10 | Una solicitud entre 50 y 74 puntos se clasifica como `Revisar`. |
-| RN-11 | Una solicitud con menos de 50 puntos se clasifica como `Rechazada`. |
-| RN-12 | La clasificaciÃ³n generada por la IA es preliminar y no constituye una decisiÃ³n definitiva. |
-| RN-13 | Solamente la decisiÃ³n registrada por el analista representa el resultado final de la revisiÃ³n. |
-| RN-14 | La decisiÃ³n humana puede confirmar o modificar la clasificaciÃ³n sugerida, pero debe quedar registrada con fecha y responsable. |
-| RN-15 | Solamente una solicitud aprobada puede utilizarse para registrar una empresa como instalada. |
-| RN-16 | Cada reporte de cumplimiento debe asociarse con una empresa instalada y un periodo determinado. |
-| RN-17 | Se genera una alerta cuando los empleos reales son inferiores a los empleos comprometidos. |
-| RN-18 | Se genera una alerta cuando la inversiÃ³n ejecutada es inferior a la inversiÃ³n comprometida para el periodo evaluado. |
-| RN-19 | Las solicitudes y reportes no deben depender exclusivamente de la memoria del navegador; deben almacenarse en `json-server`. |
-| RN-20 | Los errores de comunicaciÃ³n no deben cambiar automÃ¡ticamente el estado de una solicitud ni eliminar informaciÃ³n existente. |
+- **RN-01 (Sector permitido):** Una solicitud cuyo sector de actividad no figure en la lista de sectores permitidos de la zona franca recibe una penalización crítica en la evaluación de afinidad.
+- **RN-02 (Umbrales de inversión y empleo):** La inversión y los empleos proyectados deben ser valores numéricos positivos estrictamente mayores a cero y alcanzar los mínimos fijados por la zona franca.
+- **RN-03 (Escala de evaluación IA):** El puntaje de afinidad es un valor entero comprendido entre 0 y 100 puntos.
+- **RN-04 (Umbrales de clasificación preliminar):**
+  - Puntaje $\ge 75$: Clasificación sugerida `Recomendada`.
+  - Puntaje entre $50$ y $74$: Clasificación sugerida `Revisar`.
+  - Puntaje $< 50$: Clasificación sugerida `Rechazada`.
+- **RN-05 (Prevalencia de decisión humana):** Toda solicitud debe ser dictaminada por un analista humano (`Aprobada`, `Rechazada` o `En revisión`), pudiendo ratificar o revertir la sugerencia de la IA con la debida justificación.
+- **RN-06 (Detección de incumplimiento de empleo):** Si los empleos reales reportados son inferiores al compromiso original ($\text{empleosReales} < \text{empleosComprometidos}$), se emite automáticamente una alerta de incumplimiento de empleo.
+- **RN-07 (Detección de incumplimiento de inversión):** Si la inversión ejecutada acumulada reportada es inferior a la inversión comprometida ($\text{inversionEjecutada} < \text{inversionComprometida}$), se emite automáticamente una alerta de incumplimiento de inversión.
+- **RN-08 (Condición de empresa en regla):** Una empresa se considera `En regla` si cumple simultáneamente con el 100% o más de sus compromisos de inversión y empleo en el periodo evaluado.
 
 ---
 
-## 7. Proceso manual actual
+## 7. Proceso manual actual vs. Proceso automatizado propuesto
 
-El proceso que se desea mejorar funciona actualmente de la siguiente manera:
+### 7.1 Proceso manual actual
+1. La empresa interesada envía formularios y adjuntos mediante correo electrónico.
+2. El analista descarga y abre manualmente múltiples archivos PDF/Word.
+3. Se transcriben datos clave a una hoja de cálculo en Excel.
+4. El analista calcula manualmente si cumple inversión y empleo.
+5. Se redacta un dictamen y se envía respuesta vía correo sin bitácora centralizada.
+6. Tras la instalación, los reportes periódicos se reciben en correos dispersos.
+7. La verificación de compromisos se realiza manual y esporádicamente, provocando detección tardía de incumplimientos y auditorías complejas.
 
-1. Una empresa interesada prepara su informaciÃ³n y los documentos de respaldo.
-2. La empresa envÃ­a la solicitud por correo electrÃ³nico a la administraciÃ³n de la zona franca.
-3. Un analista abre individualmente los documentos adjuntos.
-4. El analista identifica los datos importantes de la empresa.
-5. La informaciÃ³n se transcribe manualmente a una hoja de cÃ¡lculo.
-6. El analista compara la inversiÃ³n, los empleos y el sector con los criterios correspondientes.
-7. BasÃ¡ndose en su interpretaciÃ³n, decide si la solicitud debe avanzar, revisarse nuevamente o rechazarse.
-8. La respuesta se redacta y se envÃ­a por correo electrÃ³nico.
-9. DespuÃ©s de instalarse, la empresa presenta sus reportes periÃ³dicos tambiÃ©n mediante correo y archivos adjuntos.
-10. El personal transcribe los datos de cumplimiento en otra hoja de cÃ¡lculo.
-11. Los resultados se comparan manualmente con los compromisos originales.
-12. Cuando se detecta un incumplimiento, el personal contacta a la empresa y registra el seguimiento utilizando medios separados.
+**Problemas identificados:** Lentitud (días por trámite), errores de transcripción humana, criterios de evaluación heterogéneos, riesgo de extravío de información y nula trazabilidad histórica.
 
-### 7.1 Problemas identificados
-
-- Tiempos de respuesta prolongados.
-- Posibles errores al transcribir informaciÃ³n.
-- Criterios aplicados de manera inconsistente.
-- Documentos distribuidos entre correos y hojas de cÃ¡lculo.
-- Dificultad para conocer el estado de cada solicitud.
-- Incumplimientos que pueden detectarse tardÃ­amente.
-- Falta de un historial centralizado.
-- Dificultad para identificar quiÃ©n tomÃ³ una decisiÃ³n y cuÃ¡ndo.
-- Mayor esfuerzo para preparar auditorÃ­as o reportes consolidados.
+### 7.2 Proceso automatizado propuesto
+1. **Recepción digital:** La empresa registra su solicitud en el portal web de ZoFranca CR.
+2. **Persistencia asíncrona:** La solicitud se valida en cliente y se almacena en `json-server` de inmediato.
+3. **Preclasificación IA:** El motor de IA analiza los datos concurrentemente mediante `Promise.all` y genera puntaje y justificación.
+4. **Dictamen humano:** El analista visualiza el expediente, analiza la recomendación de la IA y registra la decisión final con observaciones.
+5. **Control de cumplimiento:** Las empresas instaladas ingresan sus reportes periódicos en el módulo de cumplimiento.
+6. **Comparación y alertas automáticas:** El sistema evalúa en tiempo real los valores reales contra los compromisos y genera alertas si existen brechas.
+7. **Dashboard y métricas:** El equipo directivo visualiza indicadores en tiempo real y exporta reportes consolidados para PROCOMER.
 
 ---
 
-## 8. Requerimientos funcionales: gestión de solicitudes
+## 8. Glosario de términos
 
-| ID | Requerimiento funcional | Prioridad |
+1. **Zona Franca:** Área geográfica delimitada sujeta a un régimen especial de incentivos fiscales y aduaneros en Costa Rica.
+2. **Régimen de Zona Franca:** Conjunto de disposiciones legales y beneficios otorgados por el Estado costarricense para incentivar la inversión extranjera directa y el empleo.
+3. **PROCOMER:** Promotora del Comercio Exterior de Costa Rica, entidad encargada de supervisar el régimen y auditar el cumplimiento de compromisos.
+4. **Empresa Solicitante:** Persona jurídica que formaliza una solicitud digital de ingreso e instalación en una zona franca.
+5. **Compromiso de Inversión:** Monto formal en dólares estadounidenses que la empresa se compromete contractualmente a ejecutar.
+6. **Compromiso de Empleo:** Cantidad mínima de plazas de trabajo directas que la empresa se compromete a crear y mantener.
+7. **Reporte de Cumplimiento:** Declaración periódica de variables operativas reales (inversión ejecutada, personal activo y exportaciones realizadas).
+8. **Puntaje de Afinidad:** Calificación cuantitativa normalizada de 0 a 100 calculada por el motor de IA para evaluar la viabilidad de la solicitud.
+9. **Clasificación Preliminar:** Dictamen algorítmico sugerido (`Recomendada`, `Revisar`, `Rechazada`) previo a la resolución del analista.
+10. **Alerta de Incumplimiento:** Notificación visual y operativa emitida cuando una variable real queda por debajo del compromiso pactado.
+11. **Asincronía (Non-blocking I/O):** Modelo de ejecución JavaScript que permite realizar peticiones de red y cómputo sin congelar la interfaz de usuario.
+12. **Matriz de Trazabilidad:** Estructura documental que vincula cada historia de usuario con requerimientos funcionales, criterios de prueba y requerimientos no funcionales.
+
+---
+
+## 9. Requerimientos funcionales
+
+### 9.1 Gestión de solicitudes de instalación (Colaboración: Ernesto)
+
+#### RF-01 — Registrar y consultar zonas francas
+- **Prioridad:** Alta
+- **Actor:** Administrador / Sistema
+- **Descripción:** El sistema debe permitir registrar y consultar la configuración de zonas francas con sus parámetros: nombre, inversión mínima, empleos mínimos y sectores permitidos.
+
+#### RF-02 — Registrar y enviar solicitud de instalación
+- **Prioridad:** Alta
+- **Actor:** Empresa solicitante
+- **Descripción:** El sistema debe permitir a una empresa completar y enviar digitalmente una solicitud con nombre, cédula jurídica, sector, inversión proyectada, empleos proyectados, contacto y referencias documentales.
+
+#### RF-03 — Guardar y consultar solicitudes de forma asíncrona
+- **Prioridad:** Alta
+- **Actor:** Sistema / Analista
+- **Descripción:** El sistema debe almacenar y recuperar cada solicitud en `json-server` (`/solicitudes`) de manera asíncrona mediante `fetch` y `async/await`, sin recargar ni bloquear la interfaz de usuario.
+
+#### RF-04 — Evaluar solicitud mediante IA simulada
+- **Prioridad:** Alta
+- **Actor:** Sistema / Motor de IA
+- **Descripción:** El sistema debe enviar asíncronamente el perfil de la solicitud al motor de IA para obtener un puntaje de afinidad entero (0–100) y una justificación técnica basada en inversión, empleos y sector.
+
+#### RF-05 — Clasificar automáticamente la solicitud
+- **Prioridad:** Alta
+- **Actor:** Sistema / Motor de IA
+- **Descripción:** El sistema debe asignar una clasificación preliminar (`Recomendada`, `Revisar`, `Rechazada`) en función del puntaje de afinidad y persistir la evaluación en el backend.
+
+---
+
+### 9.2 Cumplimiento, reportería y alertas (Responsabilidad: Ulysses)
+
+#### RF-06 — Registrar reporte periódico de cumplimiento
+- **Prioridad:** Alta
+- **Actor:** Empresa instalada / Analista de cumplimiento
+- **Descripción:** El sistema debe permitir registrar reportes periódicos de cumplimiento conteniendo empleos reales, inversión ejecutada acumulada, monto exportado y periodo correspondiente, validando tipos de datos y persistiendo en `json-server` (`/reportesCumplimiento`).
+
+#### RF-07 — Comparar cumplimiento contra compromisos originales
+- **Prioridad:** Alta
+- **Actor:** Sistema / Analista de cumplimiento
+- **Descripción:** El sistema debe obtener asíncronamente los compromisos pactados de la empresa y compararlos automáticamente con los datos del reporte, calculando porcentajes de cumplimiento ($\% \text{ Empleo}$, $\% \text{ Inversión}$) y brechas absolutas.
+
+#### RF-08 — Generar y visualizar alertas de incumplimiento
+- **Prioridad:** Alta
+- **Actor:** Sistema / Analista de cumplimiento
+- **Descripción:** El sistema debe identificar automáticamente si los empleos reales o la inversión ejecutada están por debajo de los compromisos ($< 100\%$) y generar alertas visuales detalladas indicando empresa, indicador afectado, valor comprometido, valor reportado, diferencia y severidad.
+
+#### RF-09 — Visualizar resumen consolidado de cumplimiento (PROCOMER)
+- **Prioridad:** Media
+- **Actor:** Analista de cumplimiento / Auditor
+- **Descripción:** El sistema debe presentar un consolidado general que agrupe las empresas por estado (`En regla`, `En observación`, `Incumplimiento`), totalizando empleos generados e inversión ejecutada para simular el informe de fiscalización para PROCOMER.
+
+---
+
+### 9.3 Experiencia de usuario, asincronía y resiliencia (Responsabilidad: Ulysses / Colaborativo)
+
+#### RF-10 — Mostrar indicadores visuales de carga (Loading states)
+- **Prioridad:** Alta
+- **Actor:** Usuario general
+- **Descripción:** El sistema debe mostrar un indicador visual explícito ("Cargando...", spinners o barras de progreso) durante la ejecución de operaciones asíncronas de red o evaluación, ocultándolo automáticamente al finalizar exitosamente o al ocurrir un error.
+
+#### RF-11 — Manejo amigable y robusto de errores
+- **Prioridad:** Alta
+- **Actor:** Usuario general / Sistema
+- **Descripción:** El sistema debe capturar mediante `try/catch` fallos de red, indisponibilidad del servidor (`json-server` apagado) o datos inválidos, mostrando notificaciones comprensibles y no técnicas al usuario sin interrumpir la ejecución de la aplicación.
+
+#### RF-12 — Confirmar o modificar decisión de IA por analista humano
+- **Prioridad:** Alta
+- **Actor:** Analista de solicitudes
+- **Descripción:** La plataforma debe requerir que un analista humano revise la clasificación sugerida por la IA y confirme, rechace o modifique la decisión final, registrando su nombre, fecha y observaciones justificativas.
+
+#### RF-13 — Procesamiento y evaluación paralela con `Promise.all`
+- **Prioridad:** Alta
+- **Actor:** Sistema / Analista
+- **Descripción:** El sistema debe procesar solicitudes o reportes múltiples e independientes de forma concurrente utilizando `Promise.all`, optimizando el tiempo global de respuesta sin bloqueos secuenciales.
+
+---
+
+### 9.4 Auditoría, administración y extensiones (Responsabilidad: Ulysses)
+
+#### RF-14 — Consultar historial y trazabilidad por empresa
+- **Prioridad:** Media
+- **Actor:** Auditor / Gerente
+- **Descripción:** El sistema debe permitir consultar el historial cronológico completo de una empresa: solicitud original, fecha de aprobación, analista responsable y evolución de reportes periódicos de cumplimiento.
+
+#### RF-15 — Listar y filtrar solicitudes multicriterio
+- **Prioridad:** Media
+- **Actor:** Analista / Administrador
+- **Descripción:** El sistema debe permitir consultar el listado completo de solicitudes aplicando filtros dinámicos por estado (`Pendiente`, `Aprobada`, `Rechazada`), sector económico, zona franca y búsqueda textual por nombre de empresa.
+
+#### RF-16 — Persistir estado integral en `json-server` (`db.json`)
+- **Prioridad:** Alta
+- **Actor:** Sistema
+- **Descripción:** Todas las entidades (zonas francas, solicitudes, empresas, reportes) deben persistir en `db.json` para permitir que el estado de la aplicación se conserve ante recargas de página o reinicios del backend.
+
+#### RF-17 — Administrar múltiples zonas francas (Escalabilidad)
+- **Prioridad:** Baja (Diseño arquitectónico)
+- **Actor:** Administrador
+- **Descripción:** La arquitectura de datos y servicios debe soportar la incorporación de múltiples zonas francas con parámetros y umbrales diferenciados sin requerir cambios estructurales en el código fuente.
+
+#### RF-18 — Panel de métricas globales (Dashboard)
+- **Prioridad:** Media
+- **Actor:** Administrador / Gerente
+- **Descripción:** El sistema debe calcular y mostrar en un panel interactivo métricas clave en tiempo real: total de solicitudes recibidas, solicitudes pendientes, solicitudes aprobadas, empresas en cumplimiento, empresas con alertas activas y montos acumulados.
+
+---
+
+## 10. Requerimientos no funcionales (RNF)
+
+| ID | Nombre | Especificación técnica verificable |
 |---|---|---|
-| RF-01 | El sistema debe permitir registrar y consultar una zona franca con su nombre, inversión mínima, empleos mínimos proyectados y sectores permitidos. | Alta |
-| RF-02 | El sistema debe permitir a una empresa completar y enviar una solicitud con su nombre, identificación jurídica, sector, inversión proyectada, empleos proyectados, persona de contacto y referencia de los documentos de respaldo. | Alta |
-| RF-03 | El sistema debe guardar y consultar cada solicitud de forma asíncrona mediante `json-server`, sin bloquear la interfaz y mostrando el estado de la operación. | Alta |
-| RF-04 | El sistema debe evaluar el perfil de una solicitud mediante un motor de IA simulado que devuelva un puntaje entero entre 0 y 100 y una justificación basada en el sector, la inversión y los empleos proyectados. | Alta |
-| RF-05 | El sistema debe asignar automáticamente la clasificación preliminar `Recomendada`, `Revisar` o `Rechazada`, según los umbrales establecidos en las reglas de negocio. | Alta |
+| **RNF-01** | Interfaz no bloqueante | Todas las peticiones HTTP y cálculos de evaluación deben ejecutarse en segundo plano mediante `async/await` y Promesas, sin congelar el hilo principal de renderizado del navegador. |
+| **RNF-02** | Tiempo de respuesta percibido | Las operaciones asíncronas individuales deben ofrecer retroalimentación visual inmediata ($\le 200 \text{ ms}$) y completar el procesamiento en un tiempo percibido inferior a 3.0 segundos en condiciones normales de red local. |
+| **RNF-03** | Procesamiento paralelo | El procesamiento en lote de solicitudes o reportes independientes debe emplear `Promise.all` para ejecutar las peticiones de forma concurrente, logrando un tiempo total menor a la suma lineal de las llamadas. |
+| **RNF-04** | Compatibilidad y portabilidad | La aplicación debe ejecutarse directamente en navegadores web modernos estándares (Google Chrome $\ge 110$, Mozilla Firefox $\ge 110$, Microsoft Edge $\ge 110$) utilizando HTML5, CSS3 y JavaScript ES6+ modular sin necesidad de compiladores externos. |
+| **RNF-05** | Gestión y comunicación de errores | Todos los errores de red, backend o datos deben ser interceptados mediante bloques `try/catch`, registrando el detalle técnico en la consola de depuración y presentando al usuario mensajes en lenguaje natural claros y orientados a la solución. |
+| **RNF-06** | Persistencia y consistencia | El backend simulado con `json-server` debe mantener la integridad estructural del esquema de datos definido en `db.json` ante reinicios del servicio. |
+| **RNF-07** | Fidelidad al diseño de interfaz | La interfaz de usuario debe implementar fielmente las vistas y componentes especificados en los mockups aprobados para Stitch (Formulario de Solicitud, Dashboard, Detalle de Solicitud, Formulario de Cumplimiento y Panel de Alertas). |
+| **RNF-08** | Control de versiones y autoría | El proyecto debe mantener un historial de Git limpio y trazable mediante ramas funcionales (`feature/*`), Pull Requests documentados y contribuciones diferenciadas entre los integrantes del equipo. |
+| **RNF-09** | Modularidad y mantenibilidad | El código JavaScript debe estructurarse siguiendo el patrón de módulos ES6 separados por responsabilidad: servicios (`services/`), módulos de negocio (`modules/`) y utilidades (`utils/`). |
 
 ---
 
-## 9. Historias de usuario: gestión de solicitudes
+## 11. Historias de usuario
 
-### HU-01 — Configuración de criterios
+### 11.1 Empresa solicitante e instalada
 
-**Como** administrador de la zona franca,  
-**quiero** registrar los criterios mínimos de admisión,  
-**para** que todas las solicitudes sean evaluadas utilizando las mismas reglas.
+#### HU-01 — Registro digital de solicitud
+- **Como:** Representante de una empresa interesada,
+- **Quiero:** Completar y enviar digitalmente mi solicitud de instalación con datos de inversión y empleo,
+- **Para:** Formalizar el trámite de ingreso sin depender de correos manuales ni transcripciones.
+- **RF Asociados:** RF-02, RF-03.
+- **RNF Asociados:** RNF-01, RNF-05, RNF-06.
 
-**Requerimientos relacionados:** RF-01.
-
-### HU-02 — Envío de solicitud
-
-**Como** representante de una empresa solicitante,  
-**quiero** completar y enviar una solicitud desde la plataforma,  
-**para** no depender del envío de correos y hojas de cálculo.
-
-**Requerimientos relacionados:** RF-02 y RF-03.
-
-### HU-03 — Evaluación preliminar
-
-**Como** analista de solicitudes,  
-**quiero** obtener un puntaje y una justificación para cada solicitud,  
-**para** priorizar la revisión utilizando criterios consistentes.
-
-**Requerimientos relacionados:** RF-04.
-
-### HU-04 — Clasificación de solicitudes
-
-**Como** analista de solicitudes,  
-**quiero** visualizar una clasificación preliminar de cada solicitud,  
-**para** identificar rápidamente cuáles parecen cumplir los criterios establecidos.
-
-**Requerimientos relacionados:** RF-05.
+#### HU-02 — Envío de reporte de cumplimiento
+- **Como:** Encargado de operaciones de una empresa instalada,
+- **Quiero:** Enviar periódicamente mis reportes de inversión ejecutada, empleo real y exportaciones en línea,
+- **Para:** Demostrar el cumplimiento de los compromisos adquiridos ante la zona franca y PROCOMER.
+- **RF Asociados:** RF-06.
+- **RNF Asociados:** RNF-01, RNF-05, RNF-06.
 
 ---
 
-## 10. Criterios de aceptación: gestión de solicitudes
+### 11.2 Analista de admisiones y cumplimiento
 
-### RF-01 — Registrar y consultar una zona franca
+#### HU-03 — Preclasificación y puntaje asistido por IA
+- **Como:** Analista de admisiones,
+- **Quiero:** Obtener una evaluación automática de afinidad con puntaje (0–100) y justificación técnica para cada solicitud,
+- **Para:** Priorizar y agilizar el análisis técnico de las propuestas recibidas.
+- **RF Asociados:** RF-04, RF-05.
+- **RNF Asociados:** RNF-01, RNF-02.
 
-#### Escenario 1: registro correcto
+#### HU-04 — Supervisión y decisión final humana
+- **Como:** Analista de admisiones,
+- **Quiero:** Revisar los detalles de la solicitud y confirmar, modificar o rechazar la recomendación de la IA con mis observaciones,
+- **Para:** Garantizar que la decisión legal y formal sea tomada bajo criterio y responsabilidad humana.
+- **RF Asociados:** RF-12.
+- **RNF Asociados:** RNF-05, RNF-06.
 
-**Dado** que el administrador introduce el nombre, la inversión mínima, los empleos mínimos y al menos un sector permitido,  
-**cuando** registra la zona franca,  
-**entonces** el sistema guarda los datos en `json-server` y muestra un mensaje de confirmación.
+#### HU-05 — Detección y gestión de alertas de incumplimiento
+- **Como:** Analista de cumplimiento,
+- **Quiero:** Visualizar alertas automáticas cuando una empresa no alcance sus compromisos de inversión o empleo,
+- **Para:** Identificar brechas oportunamente y tomar acciones correctivas inmediatas.
+- **RF Asociados:** RF-07, RF-08.
+- **RNF Asociados:** RNF-01, RNF-05.
 
-#### Escenario 2: datos inválidos
+#### HU-06 — Evaluación en lote de solicitudes
+- **Como:** Analista de admisiones,
+- **Quiero:** Procesar la evaluación de múltiples solicitudes pendientes de manera concurrente con un solo clic,
+- **Para:** Ahorrar tiempo en jornadas con alto volumen de expedientes.
+- **RF Asociados:** RF-13.
+- **RNF Asociados:** RNF-01, RNF-03.
 
-**Dado** que falta un dato obligatorio o un valor mínimo es igual o menor que cero,  
-**cuando** el administrador intenta registrar la zona franca,  
-**entonces** el sistema impide el envío y señala los campos que deben corregirse.
+---
 
-#### Escenario 3: consulta
+### 11.3 Administrador y Auditor
 
-**Dado** que existe una zona franca registrada,  
-**cuando** el sistema consulta sus criterios,  
-**entonces** muestra el nombre, la inversión mínima, los empleos mínimos y los sectores permitidos.
+#### HU-07 — Panel de control y métricas consolidadas (Dashboard)
+- **Como:** Administrador de la zona franca,
+- **Quiero:** Visualizar un dashboard con métricas agregadas de solicitudes, cumplimiento y alertas en tiempo real,
+- **Para:** Tomar decisiones estratégicas y monitorear el desempeño global del régimen.
+- **RF Asociados:** RF-18.
+- **RNF Asociados:** RNF-01, RNF-02.
 
-### RF-02 — Completar y enviar una solicitud
+#### HU-08 — Búsqueda y filtrado multicriterio
+- **Como:** Analista o administrador,
+- **Quiero:** Filtrar las solicitudes por estado, sector, zona franca o texto libre,
+- **Para:** Localizar rápidamente expedientes específicos sin navegar manualmente toda la lista.
+- **RF Asociados:** RF-15.
+- **RNF Asociados:** RNF-01, RNF-04.
 
-#### Escenario 1: solicitud válida
+#### HU-09 — Trazabilidad y expediente histórico
+- **Como:** Auditor o gerente,
+- **Quiero:** Consultar la bitácora completa de una empresa (solicitud original, evaluación IA, dictamen del analista y reportes históricos),
+- **Para:** Sustentar auditorías formales y verificar la debida diligencia del proceso.
+- **RF Asociados:** RF-14, RF-16.
+- **RNF Asociados:** RNF-06, RNF-08.
 
-**Dado** que la empresa completó todos los datos obligatorios con valores válidos,  
-**cuando** envía el formulario,  
-**entonces** el sistema acepta la solicitud y comienza el proceso de almacenamiento.
+#### HU-10 — Resumen de cumplimiento para fiscalización
+- **Como:** Analista de cumplimiento,
+- **Quiero:** Generar una vista consolidada de cumplimiento de todas las empresas instaladas,
+- **Para:** Facilitar la entrega periódica de información a los inspectores de PROCOMER.
+- **RF Asociados:** RF-09.
+- **RNF Asociados:** RNF-01, RNF-09.
 
-#### Escenario 2: solicitud incompleta
+---
 
-**Dado** que falta un dato obligatorio,  
-**cuando** la empresa intenta enviar el formulario,  
-**entonces** el sistema impide el envío e identifica el campo incompleto.
+### 11.4 Equipo de desarrollo y aseguramiento de calidad
 
-#### Escenario 3: valores numéricos inválidos
+#### HU-11 — Validación visual previa con Mockups
+- **Como:** Desarrollador del equipo,
+- **Quiero:** Disponer de especificaciones detalladas y mockups validados en Stitch para cada pantalla,
+- **Para:** Construir la interfaz de usuario con precisión de componentes y sin retrabajo.
+- **RF Asociados:** RNF-07.
+- **RNF Asociados:** RNF-07, RNF-09.
 
-**Dado** que la inversión o los empleos proyectados son iguales o menores que cero,  
-**cuando** la empresa intenta enviar la solicitud,  
-**entonces** el sistema rechaza los datos y muestra un mensaje de validación.
+#### HU-12 — Validación estricta de requerimientos con IA
+- **Como:** Líder técnico del proyecto,
+- **Quiero:** Someter el documento de requerimientos a una validación exhaustiva con IA revisora,
+- **Para:** Garantizar completitud, verificabilidad, consistencia y trazabilidad antes de la fase de integración.
+- **RF Asociados:** RNF-08.
+- **RNF Asociados:** RNF-08, RNF-09.
 
-### RF-03 — Guardar y consultar solicitudes de manera asíncrona
+---
 
-#### Escenario 1: almacenamiento correcto
+## 12. Criterios de aceptación detallados (Dado / Cuando / Entonces)
 
-**Dado** que la solicitud contiene datos válidos y `json-server` está disponible,  
-**cuando** el sistema realiza la petición de guardado,  
-**entonces** almacena la solicitud, recibe su identificador y confirma la operación sin recargar la página.
+### CA-RF-01: Registrar y consultar zonas francas (RF-01)
+- **Escenario 1 (Registro exitoso):**
+  - **Dado** que el administrador ingresa nombre, inversión mínima (> 0), empleos mínimos (> 0) y sectores válidos,
+  - **Cuando** presiona guardar configuración de zona franca,
+  - **Entonces** el sistema persiste los datos en `json-server` (`/zonasFrancas`) y muestra un mensaje de confirmación.
+- **Escenario 2 (Datos inválidos):**
+  - **Dado** que se omiten campos obligatorios o se ingresan valores negativos o iguales a cero,
+  - **Cuando** se intenta enviar el formulario,
+  - **Entonces** el sistema bloquea el envío, resalta los campos incorrectos y no realiza peticiones al servidor.
 
-#### Escenario 2: indicador de carga
+### CA-RF-02: Registrar y enviar solicitud de instalación (RF-02)
+- **Escenario 1 (Envío conforme):**
+  - **Dado** que la empresa solicitante completa todos los campos obligatorios con valores positivos y sector permitido,
+  - **Cuando** envía el formulario de solicitud,
+  - **Entonces** el sistema registra la solicitud con estado `Pendiente` y muestra el identificador asignado.
+- **Escenario 2 (Campos incompletos o vacíos):**
+  - **Dado** que falta el nombre de contacto o la identificación jurídica,
+  - **Cuando** se intenta enviar la solicitud,
+  - **Entonces** el sistema muestra alertas de validación en los campos requeridos y cancela la petición.
 
-**Dado** que hay una operación de almacenamiento o consulta en proceso,  
-**cuando** el sistema espera la respuesta del backend,  
-**entonces** muestra un indicador de carga y mantiene la interfaz disponible.
+### CA-RF-03: Guardar y consultar solicitudes de forma asíncrona (RF-03)
+- **Escenario 1 (Persistencia asíncrona reactiva):**
+  - **Dado** que el backend `json-server` está activo en el puerto 3001,
+  - **Cuando** se solicita guardar o consultar una solicitud,
+  - **Entonces** el sistema resuelve la Promesa de red sin recargar la página web y actualiza el DOM de forma dinámica.
+- **Escenario 2 (Caída de backend):**
+  - **Dado** que `json-server` está apagado o inaccesible,
+  - **Cuando** se realiza una petición de guardado o consulta,
+  - **Entonces** el sistema captura la excepción en un bloque `try/catch` y muestra una notificación amigable de error al usuario.
 
-#### Escenario 3: error del backend
+### CA-RF-04: Evaluar solicitud mediante IA simulada (RF-04)
+- **Escenario 1 (Cálculo de afinidad completo):**
+  - **Dado** que existe una solicitud válida y los criterios de la zona franca están cargados,
+  - **Cuando** se ejecuta la evaluación por IA,
+  - **Entonces** el servicio retorna una Promesa resuelta con un puntaje entero entre 0 y 100 y una justificación textual explicativa.
+- **Escenario 2 (Datos insuficientes para evaluación):**
+  - **Dado** que la solicitud carece de montos de inversión o empleo,
+  - **Cuando** se invoca el evaluador de IA,
+  - **Entonces** la Promesa se rechaza con un mensaje de error descriptivo capturado por el módulo llamador.
 
-**Dado** que `json-server` no está disponible,  
-**cuando** el sistema intenta guardar o consultar una solicitud,  
-**entonces** captura el error, lo registra en la consola y muestra un mensaje comprensible sin cerrar la aplicación.
+### CA-RF-05: Clasificar automáticamente la solicitud (RF-05)
+- **Escenario 1 (Clasificación Recomendada):**
+  - **Dado** que el motor de IA calcula un puntaje de afinidad $\ge 75$,
+  - **Cuando** concluye la evaluación,
+  - **Entonces** asigna la clasificación preliminar `Recomendada`.
+- **Escenario 2 (Clasificación Revisar):**
+  - **Dado** que el motor de IA calcula un puntaje entre 50 y 74,
+  - **Cuando** concluye la evaluación,
+  - **Entonces** asigna la clasificación preliminar `Revisar`.
+- **Escenario 3 (Clasificación Rechazada):**
+  - **Dado** que el motor de IA calcula un puntaje $< 50$,
+  - **Cuando** concluye la evaluación,
+  - **Entonces** asigna la clasificación preliminar `Rechazada`.
 
-### RF-04 — Evaluar una solicitud mediante IA simulada
+### CA-RF-06: Registrar reporte periódico de cumplimiento (RF-06)
+- **Escenario 1 (Registro de reporte válido):**
+  - **Dado** que una empresa instalada selecciona su identificador e ingresa empleos reales ($\ge 0$), inversión ejecutada ($\ge 0$) y exportaciones ($\ge 0$) para un periodo determinado,
+  - **Cuando** envía el formulario de cumplimiento,
+  - **Entonces** el sistema guarda el reporte en `json-server` (`/reportesCumplimiento`) y muestra confirmación de registro exitoso.
+- **Escenario 2 (Valores negativos o datos no numéricos):**
+  - **Dado** que el usuario ingresa valores negativos en empleo o inversión,
+  - **Cuando** intenta guardar el reporte,
+  - **Entonces** el formulario intercepta el error, muestra un mensaje de validación y previene el envío.
 
-#### Escenario 1: evaluación correcta
+### CA-RF-07: Comparar cumplimiento contra compromisos originales (RF-07)
+- **Escenario 1 (Cálculo automático de porcentajes):**
+  - **Dado** un compromiso de 50 empleos y $100,000 de inversión, y un reporte de 40 empleos y $120,000 de inversión,
+  - **Cuando** se procesa el reporte de cumplimiento,
+  - **Entonces** el sistema calcula $80\%$ de cumplimiento en empleo y $120\%$ en inversión, identificando la brecha de $-10$ empleos.
 
-**Dado** que existe una solicitud completa y una zona franca con criterios registrados,  
-**cuando** se solicita la evaluación,  
-**entonces** el motor devuelve un puntaje entero entre 0 y 100 y una justificación relacionada con el sector, la inversión y los empleos.
+### CA-RF-08: Generar y visualizar alertas de incumplimiento (RF-08)
+- **Escenario 1 (Emisión de alerta por déficit):**
+  - **Dado** que una empresa reporta un valor de empleo o inversión inferior al $100\%$ del compromiso,
+  - **Cuando** el sistema procesa el reporte o se consulta el módulo de alertas,
+  - **Entonces** se genera y lista una alerta roja/ámbar detallando: nombre de empresa, indicador incumplido, meta comprometida, valor alcanzado y brecha.
+- **Escenario 2 (Empresa en regla sin alertas):**
+  - **Dado** que una empresa alcanza o supera el $100\%$ en todos sus compromisos,
+  - **Cuando** se evalúa el reporte,
+  - **Entonces** el estado asignado es `En regla` y no se emiten alertas de incumplimiento.
 
-#### Escenario 2: datos incompletos
+### CA-RF-09: Visualizar resumen consolidado de cumplimiento (RF-09)
+- **Escenario 1 (Generación de consolidado):**
+  - **Dado** que existen reportes registrados de diversas empresas,
+  - **Cuando** el analista ingresa a la vista de cumplimiento,
+  - **Entonces** el sistema muestra la tabla consolidada con totales de inversión ejecutada, empleo global y categorización de empresas (`En regla`, `Con alertas`).
 
-**Dado** que la solicitud no contiene los datos necesarios para calcular el puntaje,  
-**cuando** se intenta realizar la evaluación,  
-**entonces** la Promesa es rechazada y el sistema muestra un mensaje de error claro.
+### CA-RF-10: Mostrar indicadores visuales de carga (RF-10)
+- **Escenario 1 (Activación y desactivación del indicador):**
+  - **Dado** que se inicia una petición asíncrona de consulta o guardado,
+  - **Cuando** la Promesa se encuentra en estado *pending*,
+  - **Entonces** la UI muestra un indicador "Cargando datos...", y al cambiar la Promesa a *fulfilled* o *rejected*, el indicador se oculta inmediatamente.
 
-#### Escenario 3: evaluación paralela
+### CA-RF-11: Manejo amigable y robusto de errores (RF-11)
+- **Escenario 1 (Captura de error de red sin bloqueo):**
+  - **Dado** un fallo en la conexión con la API REST,
+  - **Cuando** se ejecuta una acción del usuario,
+  - **Entonces** la aplicación muestra un mensaje amigable ("No se pudo conectar con el servidor. Verifique que json-server esté corriendo"), manteniendo la interfaz activa y funcional.
 
-**Dado** que existen varias solicitudes pendientes,  
-**cuando** el analista solicita procesarlas,  
-**entonces** el sistema las evalúa en paralelo mediante `Promise.all` sin bloquear la interfaz.
+### CA-RF-12: Confirmar o modificar decisión de IA por analista humano (RF-12)
+- **Escenario 1 (Confirmación de decisión):**
+  - **Dado** que una solicitud posee una clasificación sugerida por la IA,
+  - **Cuando** el analista revisa el detalle, selecciona la decisión definitiva (`Aprobada`, `Rechazada`, `En revisión`), ingresa su nombre y observaciones, y presiona "Confirmar decisión",
+  - **Entonces** el sistema actualiza el registro en `json-server` con los datos del dictamen humano y actualiza el estado general.
 
-### RF-05 — Clasificar automáticamente una solicitud
+### CA-RF-13: Procesamiento y evaluación paralela con `Promise.all` (RF-13)
+- **Escenario 1 (Evaluación concurrente por lotes):**
+  - **Dado** un conjunto de $N$ solicitudes pendientes,
+  - **Cuando** el usuario pulsa "Evaluar todas con IA",
+  - **Entonces** el sistema dispara las $N$ promesas concurrentemente mediante `Promise.all`, actualizando todos los registros en tiempo global óptimo sin bloquear la pantalla.
 
-#### Escenario 1: solicitud recomendada
+### CA-RF-14: Consultar historial y trazabilidad por empresa (RF-14)
+- **Escenario 1 (Consulta de expediente):**
+  - **Dado** un identificador de empresa seleccionada,
+  - **Cuando** se abre su vista detallada,
+  - **Entonces** se despliega la cronología: fecha de ingreso, evaluación IA, analista que aprobó y lista histórica de reportes periódicos.
 
-**Dado** que una solicitud obtiene un puntaje entre 75 y 100,  
-**cuando** finaliza la evaluación,  
-**entonces** el sistema la clasifica preliminarmente como `Recomendada`.
+### CA-RF-15: Listar y filtrar solicitudes multicriterio (RF-15)
+- **Escenario 1 (Filtrado dinámico en tiempo real):**
+  - **Dado** un listado de solicitudes cargadas,
+  - **Cuando** el usuario escribe en la barra de búsqueda o cambia el filtro de estado/sector,
+  - **Entonces** la tabla se actualiza instantáneamente mostrando únicamente las solicitudes que coinciden con los criterios.
 
-#### Escenario 2: solicitud que requiere revisión
+### CA-RF-16: Persistir estado integral en `json-server` (RF-16)
+- **Escenario 1 (Verificación de persistencia):**
+  - **Dado** que se crea o modifica una solicitud o reporte,
+  - **Cuando** se recarga la página del navegador (`F5`),
+  - **Entonces** el sistema consulta a `json-server` y recupera exactamente la información modificada.
 
-**Dado** que una solicitud obtiene un puntaje entre 50 y 74,  
-**cuando** finaliza la evaluación,  
-**entonces** el sistema la clasifica preliminarmente como `Revisar`.
+### CA-RF-17: Administrar múltiples zonas francas (RF-17)
+- **Escenario 1 (Soporte multi-entidad):**
+  - **Dado** que en `db.json` existen dos o más zonas francas registradas,
+  - **Cuando** el usuario interactúa con los selectores de la aplicación,
+  - **Entonces** el sistema permite asociar solicitudes y criterios a la zona franca correspondiente sin conflictos.
 
-#### Escenario 3: solicitud rechazada preliminarmente
+### CA-RF-18: Panel de métricas globales (RF-18)
+- **Escenario 1 (Cálculo de métricas en dashboard):**
+  - **Dado** que el sistema carga las colecciones de solicitudes, empresas y reportes,
+  - **Cuando** se renderiza la página del Dashboard,
+  - **Entonces** se muestran tarjetas con: total de solicitudes, solicitudes pendientes, solicitudes aprobadas, empresas en regla, empresas con incumplimiento y total de alertas activas.
 
-**Dado** que una solicitud obtiene un puntaje inferior a 50,  
-**cuando** finaliza la evaluación,  
-**entonces** el sistema la clasifica preliminarmente como `Rechazada`.
+---
 
-#### Escenario 4: persistencia del resultado
+## 13. Matriz de trazabilidad exhaustiva
 
-**Dado** que una solicitud fue evaluada y clasificada,  
-**cuando** termina el procesamiento,  
-**entonces** el sistema guarda en `json-server` el puntaje, la justificación, la clasificación preliminar y la fecha de evaluación.
+| Historia de Usuario | Requerimiento Funcional (RF) | Criterio de Aceptación (CA) | Requerimiento No Funcional (RNF) | Módulo / Servicio Responsable |
+|---|---|---|---|---|
+| **HU-01** | RF-01, RF-02, RF-03 | CA-RF-01, CA-RF-02, CA-RF-03 | RNF-01, RNF-05, RNF-06 | `solicitudesService.js`, `solicitudes.js` |
+| **HU-02** | RF-06 | CA-RF-06 | RNF-01, RNF-05, RNF-06 | `reportesService.js`, `cumplimiento.js` |
+| **HU-03** | RF-04, RF-05 | CA-RF-04, CA-RF-05 | RNF-01, RNF-02, RNF-09 | `iaService.js`, `solicitudes.js` |
+| **HU-04** | RF-12 | CA-RF-12 | RNF-05, RNF-06 | `solicitudes.js`, `detalle-solicitud.html` |
+| **HU-05** | RF-07, RF-08 | CA-RF-07, CA-RF-08 | RNF-01, RNF-05, RNF-09 | `cumplimiento.js`, `alertas.js` |
+| **HU-06** | RF-13 | CA-RF-13 | RNF-01, RNF-03 | `app.js`, `iaService.js` |
+| **HU-07** | RF-18 | CA-RF-18 | RNF-01, RNF-02 | `app.js`, `dashboard.html` |
+| **HU-08** | RF-15 | CA-RF-15 | RNF-01, RNF-04 | `solicitudes.js`, `solicitudes.html` |
+| **HU-09** | RF-14, RF-16 | CA-RF-14, CA-RF-16 | RNF-06, RNF-08 | `solicitudesService.js`, `reportesService.js` |
+| **HU-10** | RF-09 | CA-RF-09 | RNF-01, RNF-09 | `cumplimiento.js`, `cumplimiento.html` |
+| **HU-11** | RNF-07 | RNF-07 | RNF-07, RNF-09 | `mockups/README.md`, `css/styles.css` |
+| **HU-12** | RNF-08 | RNF-08 | RNF-08, RNF-09 | `docs/validacion-ia.md`, Git |
+
+---
+
+## 14. Rol y diseño de la asincronía en JavaScript
+
+La plataforma ZoFranca CR implementa un modelo de programación asíncrona estricto para garantizar que la interfaz de usuario se mantenga siempre reactiva y fluida:
+
+| Patrón / Mecanismo | Justificación e Implementación en el Proyecto |
+|---|---|
+| **`Promise`** | Encapsula todas las operaciones de entrada/salida diferidas: llamadas HTTP mediante `fetch()`, retardos controlados de simulación de IA y lectura de almacenamiento. |
+| **`async / await`** | Proporciona una sintaxis secuencial y legible para orquestar flujos asíncronos complejos (p. ej. validar datos $\to$ consultar zona franca $\to$ enviar a IA $\to$ guardar en backend). |
+| **`Promise.all`** | Se utiliza para ejecutar operaciones independientes en paralelo: carga simultánea de solicitudes, empresas y reportes para el dashboard; y evaluación masiva en lote de múltiples solicitudes mediante IA. |
+| **`try / catch / finally`** | Asegura el control total sobre excepciones de red, caídas de servidor o errores de parseo JSON, garantizando que el usuario reciba retroalimentación comprensible y que los indicadores de carga se apaguen siempre en el bloque `finally`. |
+| **Estados de UI** | Manejo explícito de los tres estados del ciclo de vida asíncrono: *Cargando* (deshabilita botones y muestra spinner), *Éxito* (renderiza datos y confirma) y *Error* (alerta visual amigable). |
+
+---
+
+## 15. Rol y funcionamiento de la Inteligencia Artificial
+
+### 15.1 Propósito y alcance
+El módulo de Inteligencia Artificial opera como un **asistente de soporte a la decisión (Human-in-the-Loop)**. En ningún caso la IA tiene la potestad de emitir una aprobación o rechazo con efecto legal; su función es estandarizar la evaluación inicial, filtrar casos no viables y priorizar la bandeja de trabajo de los analistas humanos.
+
+### 15.2 Algoritmo de afinidad (Simulación académica)
+El motor de IA implementado en `iaService.js` evalúa tres dimensiones cuantitativas:
+1. **Validación de sector ($30\%$ del peso):** Verifica si el sector económico de la empresa pertenece a la lista de sectores autorizados de la zona franca. Si no pertenece, el puntaje base sufre una penalización sustancial.
+2. **Inversión proyectada ($40\%$ del peso):** Compara el monto de inversión frente a la inversión mínima requerida. Si la inversión es igual o superior al doble del mínimo, obtiene el puntaje máximo en este rubro.
+3. **Generación de empleo ($30\%$ del peso):** Evalúa la cantidad de plazas laborales proyectadas frente al umbral de la zona franca.
+
+$$\text{Puntaje Total} = \text{Puntaje}_{\text{Sector}} + \text{Puntaje}_{\text{Inversión}} + \text{Puntaje}_{\text{Empleo}} \quad (0 \le \text{Puntaje} \le 100)$$
+
+### 15.3 Salida generada por la IA
+- `puntaje`: Número entero entre 0 y 100.
+- `clasificacionSugerida`: `Recomendada` ($\ge 75$), `Revisar` ($50-74$) o `Rechazada` ($< 50$).
+- `justificacion`: Texto descriptivo en lenguaje natural explicando los motivos del puntaje (ej. *"Supera ampliamente la inversión mínima en tecnología pero su proyección de empleo es ajustada"*).
+- `fechaEvaluacion`: Marca de tiempo ISO del momento del análisis.
+
+---
+
+## 16. Evidencia y protocolo de validación de requerimientos con IA
+
+Para garantizar el cumplimiento de los más altos estándares de calidad de software, este documento se somete a validación mediante el **Prompt Oficial de Evaluación**.
+
+### 16.1 Criterios de evaluación (100 puntos totales)
+1. **Completitud (20 pts):** Cobertura exhaustiva de solicitudes, cumplimiento, alertas, dashboard, asincronía e IA.
+2. **Verificabilidad (20 pts):** Criterios de aceptación formales (Dado/Cuando/Entonces) y métricas cuantitativas sin ambigüedad.
+3. **Consistencia (20 pts):** Coherencia lógica total entre RF, RNF, historias de usuario y matriz de trazabilidad.
+4. **Trazabilidad (20 pts):** Mapeo bidireccional completo entre HU $\to$ RF $\to$ CA $\to$ RNF.
+5. **Redacción profesional (20 pts):** Ortografía, formato markdown impecable, codificación UTF-8 pura y lenguaje técnico riguroso.
+
+### 16.2 Condición de aprobación
+$$\text{Puntaje Total} \ge 80/100 \quad \land \quad \forall \text{ Categoría } \ge 12/20$$
+
+El historial de intentos, puntajes reales y mejoras implementadas se documentan en `docs/validacion-ia.md`.
+
+---
+
+## 17. Alcance, supuestos y extensiones futuras
+
+### 17.1 Alcance de la versión actual (Laboratorio #3)
+- Implementación de una zona franca activa ("Zona Franca Tica") con posibilidad de agregar más en `db.json`.
+- Módulo completo de recepción, evaluación IA y resolución humana de solicitudes.
+- Módulo completo de registro periódico de cumplimiento, comparación contra metas y cálculo de porcentajes.
+- Generación y visualización interactiva de alertas de incumplimiento.
+- Dashboard de métricas consolidadas en tiempo real.
+- Persistencia integral en `json-server` (`http://localhost:3001`).
+
+### 17.2 Extensiones futuras planificadas
+- Integración con modelos de lenguaje de gran escala (LLMs) reales mediante API REST (OpenAI / Gemini) para análisis de documentos PDF.
+- Autenticación y roles de usuario basados en JSON Web Tokens (JWT).
+- Exportación automatizada de reportes en formato PDF y Excel para PROCOMER.
+- Módulo avanzado de administración para creación dinámica de nuevas zonas francas desde la interfaz.

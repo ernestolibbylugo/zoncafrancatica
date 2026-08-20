@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle y Evaluación de Solicitud — ZoFranca CR</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        🏢 ZoFranca <span>CR</span>
+      </a>
+      <nav>
+        <ul class="navbar-nav">
+          <li><a href="../index.html" class="nav-link">Dashboard</a></li>
+          <li><a href="solicitudes.html" class="nav-link active">Solicitudes</a></li>
+          <li><a href="cumplimiento.html" class="nav-link">Cumplimiento</a></li>
+          <li><a href="alertas.html" class="nav-link">Alertas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <main class="container" id="detalle-container">
+    <div class="page-header">
+      <div>
+        <a href="solicitudes.html" class="btn btn-sm btn-secondary mb-2">← Volver al listado</a>
+        <h1>Expediente de Solicitud <span id="detalle-id">#--</span></h1>
+        <p>Empresa: <strong id="detalle-empresa-nombre">Cargando...</strong></p>
+      </div>
+      <div id="detalle-estado-badge">
+        <!-- Badge dinámico -->
+      </div>
+    </div>
+
+    <!-- Layout en Dos Columnas -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;">
+
+      <!-- Columna Izquierda: Datos del Expediente -->
+      <section class="card">
+        <div class="card-header">
+          <h2>📄 Datos Generales del Expediente</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th>Cédula Jurídica:</th>
+                  <td id="exp-identificacion">--</td>
+                </tr>
+                <tr>
+                  <th>Zona Franca Solicitada:</th>
+                  <td id="exp-zonafranca">--</td>
+                </tr>
+                <tr>
+                  <th>Sector Económico:</th>
+                  <td><span class="badge badge-info" id="exp-sector">--</span></td>
+                </tr>
+                <tr>
+                  <th>Inversión Proyectada:</th>
+                  <td>
+                    <strong id="exp-inversion">--</strong><br>
+                    <small class="text-muted">Mínimo exigido: <span id="exp-inversion-min">--</span></small>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Empleos Proyectados:</th>
+                  <td>
+                    <strong id="exp-empleos">--</strong><br>
+                    <small class="text-muted">Mínimo exigido: <span id="exp-empleos-min">--</span></small>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Contacto / Representante:</th>
+                  <td id="exp-contacto">--</td>
+                </tr>
+                <tr>
+                  <th>Documentos de Respaldo:</th>
+                  <td id="exp-documentos">--</td>
+                </tr>
+                <tr>
+                  <th>Fecha de Presentación:</th>
+                  <td id="exp-fecha">--</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Columna Derecha: Evaluación IA y Decisión Humana -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+        <!-- Tarjeta de Evaluación Asistida por IA -->
+        <section class="card">
+          <div class="card-header">
+            <h2>🤖 Evaluación Inteligencia Artificial (Soporte)</h2>
+          </div>
+          <div class="card-body" id="panel-ia-resultado">
+            <p class="text-muted">Cargando evaluación...</p>
+          </div>
+        </section>
+
+        <!-- Tarjeta de Resolución Formal del Analista (Decisión Humana) -->
+        <section class="card">
+          <div class="card-header">
+            <h2>⚖️ Resolución del Analista (Decisión Humana)</h2>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3" style="font-size: 0.88rem;">
+              Conforme a la regla de negocio <strong>RN-05</strong> y <strong>RF-12</strong>, la recomendación de la IA no es vinculante. El analista debe revisar el expediente y dictar la resolución final.
+            </p>
+
+            <form id="form-decision-humana">
+              <div class="form-group">
+                <label class="form-label" for="decision">Dictamen Formal *</label>
+                <select id="decision" name="decision" class="form-control" required>
+                  <option value="Aprobada">Aprobada (Emitir autorización de ingreso)</option>
+                  <option value="En revisión">En revisión (Solicitar aclaraciones adicionales)</option>
+                  <option value="Rechazada">Rechazada (No cumple requisitos)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="analista">Nombre del Analista Responsable *</label>
+                <input type="text" id="analista" name="analista" class="form-control" placeholder="Ej. Ulysses Quirós / Ernesto Libby" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="observaciones">Observaciones y Justificación del Dictamen</label>
+                <textarea id="observaciones" name="observaciones" class="form-control" rows="3" placeholder="Detalle los fundamentos técnicos o legales de la resolución..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Confirmar Decisión Formal
+              </button>
+            </form>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>ZoFranca CR &copy; 2026 — Plataforma de Gestión de Zonas Francas.</p>
+  </footer>
+
+  <!-- Script del Módulo -->
+  <script type="module">
+    import { SolicitudesModule } from '../js/modules/solicitudes.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      SolicitudesModule.initDetallePage();
+    });
+  </script>
+</body>
+</html>

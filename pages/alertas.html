@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Alertas — ZoFranca CR</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        🏢 ZoFranca <span>CR</span>
+      </a>
+      <nav>
+        <ul class="navbar-nav">
+          <li><a href="../index.html" class="nav-link">Dashboard</a></li>
+          <li><a href="solicitudes.html" class="nav-link">Solicitudes</a></li>
+          <li><a href="cumplimiento.html" class="nav-link">Cumplimiento</a></li>
+          <li><a href="alertas.html" class="nav-link active">Alertas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1>Panel de Alertas de Incumplimiento</h1>
+        <p>Detección automática de brechas en metas de empleo e inversión de empresas instaladas.</p>
+      </div>
+    </div>
+
+    <!-- Resumen de Métricas de Alertas -->
+    <section class="kpi-grid">
+      <div class="kpi-card kpi-danger">
+        <span class="kpi-title">Total Alertas Activas</span>
+        <div class="kpi-value text-danger" id="metric-total-alertas">0</div>
+      </div>
+      <div class="kpi-card kpi-danger">
+        <span class="kpi-title">Alertas Críticas (&lt; 75%)</span>
+        <div class="kpi-value text-danger" id="metric-alertas-criticas">0</div>
+      </div>
+      <div class="kpi-card kpi-warning">
+        <span class="kpi-title">Empresas Afectadas</span>
+        <div class="kpi-value text-warning" id="metric-empresas-afectadas">0</div>
+      </div>
+    </section>
+
+    <!-- Filtros de Alertas -->
+    <section class="card">
+      <div class="card-body">
+        <div class="d-flex justify-between align-center flex-wrap gap-2">
+          <h3 style="font-size: 1rem; color: var(--dark);">Filtrar feed de alertas:</h3>
+          <div>
+            <select id="filter-tipo-alerta" class="form-control" style="width: auto; display: inline-block;">
+              <option value="todos">Todas las anomalías</option>
+              <option value="Empleo">Déficit de Empleo</option>
+              <option value="Inversión">Déficit de Inversión</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feed de Alertas -->
+    <section id="contenedor-alertas">
+      <div class="card p-4 text-center">
+        <p class="text-muted">Cargando alertas de cumplimiento...</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>ZoFranca CR &copy; 2026 — Plataforma de Gestión de Zonas Francas.</p>
+  </footer>
+
+  <!-- Script del Módulo -->
+  <script type="module">
+    import { AlertasModule } from '../js/modules/alertas.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      AlertasModule.initPage();
+    });
+  </script>
+</body>
+</html>
